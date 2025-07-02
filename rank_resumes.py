@@ -3,7 +3,7 @@ import os
 import pdfplumber
 import pandas as pd
 
-# Load BERT model
+
 model = SentenceTransformer('all-MiniLM-L6-v2')  # lightweight & fast
 
 def read_resume_text(file_path):
@@ -28,21 +28,15 @@ def load_resumes(folder_path):
     return resumes, filenames
 
 def main():
-    # Load job description
     with open('job_description.txt', 'r', encoding='utf-8') as f:
         job_desc = f.read()
 
-    # Embed job description
     job_embedding = model.encode(job_desc, convert_to_tensor=True)
 
-    # Load and embed resumes
     resumes, filenames = load_resumes('resumes')
     resume_embeddings = model.encode(resumes, convert_to_tensor=True)
 
-    # Compute cosine similarity
     similarities = util.cos_sim(job_embedding, resume_embeddings)[0]
-
-    # Create results DataFrame
     results = pd.DataFrame({
         'Resume': filenames,
         'Similarity': similarities.cpu().numpy()
